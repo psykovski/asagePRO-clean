@@ -1,0 +1,70 @@
+diff --git a/node_modules/@capacitor/android/capacitor/src/main/java/com/getcapacitor/Bridge.java b/node_modules/@capacitor/android/capacitor/src/main/java/com/getcapacitor/Bridge.java
+index 2a72a43..9d6452a 100644
+--- a/node_modules/@capacitor/android/capacitor/src/main/java/com/getcapacitor/Bridge.java
++++ b/node_modules/@capacitor/android/capacitor/src/main/java/com/getcapacitor/Bridge.java
+@@ -280,7 +280,7 @@ public class Bridge {
+         webView.setWebChromeClient(new BridgeWebChromeClient(this));
+         webView.setWebViewClient(this.webViewClient);
+ 
+-        if (config.isResolveServiceWorkerRequests()) {
++        if (config.isResolveServiceWorkerRequests() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+             ServiceWorkerController swController = ServiceWorkerController.getInstance();
+             swController.setServiceWorkerClient(
+                 new ServiceWorkerClient() {
+diff --git a/node_modules/@capacitor/android/capacitor/src/main/java/com/getcapacitor/BridgeWebChromeClient.java b/node_modules/@capacitor/android/capacitor/src/main/java/com/getcapacitor/BridgeWebChromeClient.java
+index 6ca1c8a..4553d94 100644
+--- a/node_modules/@capacitor/android/capacitor/src/main/java/com/getcapacitor/BridgeWebChromeClient.java
++++ b/node_modules/@capacitor/android/capacitor/src/main/java/com/getcapacitor/BridgeWebChromeClient.java
+@@ -46,8 +46,8 @@ public class BridgeWebChromeClient extends WebChromeClient {
+         void onActivityResult(ActivityResult result);
+     }
+ 
+-    private ActivityResultLauncher permissionLauncher;
+-    private ActivityResultLauncher activityLauncher;
++    private ActivityResultLauncher<String[]> permissionLauncher;
++    private ActivityResultLauncher<Intent> activityLauncher;
+     private PermissionListener permissionListener;
+     private ActivityResultListener activityListener;
+ 
+@@ -418,8 +418,7 @@ public class BridgeWebChromeClient extends WebChromeClient {
+                 validTypes.add(mime);
+             }
+         }
+-        Object[] validObj = validTypes.toArray();
+-        return Arrays.copyOf(validObj, validObj.length, String[].class);
++        return validTypes.toArray(new String[0]);
+     }
+ 
+     @Override
+diff --git a/node_modules/@capacitor/android/capacitor/src/main/java/com/getcapacitor/Plugin.java b/node_modules/@capacitor/android/capacitor/src/main/java/com/getcapacitor/Plugin.java
+index 19c8b8b..1e93e24 100644
+--- a/node_modules/@capacitor/android/capacitor/src/main/java/com/getcapacitor/Plugin.java
++++ b/node_modules/@capacitor/android/capacitor/src/main/java/com/getcapacitor/Plugin.java
+@@ -676,7 +676,7 @@ public class Plugin {
+             return;
+         }
+ 
+-        CopyOnWriteArrayList<PluginCall> listenersCopy = new CopyOnWriteArrayList(listeners);
++        CopyOnWriteArrayList<PluginCall> listenersCopy = new CopyOnWriteArrayList<>(listeners);
+         for (PluginCall call : listenersCopy) {
+             call.resolve(data);
+         }
+diff --git a/node_modules/@capacitor/android/capacitor/src/main/java/com/getcapacitor/plugin/util/CapacitorHttpUrlConnection.java b/node_modules/@capacitor/android/capacitor/src/main/java/com/getcapacitor/plugin/util/CapacitorHttpUrlConnection.java
+index 612dc9c..9c2bbcb 100644
+--- a/node_modules/@capacitor/android/capacitor/src/main/java/com/getcapacitor/plugin/util/CapacitorHttpUrlConnection.java
++++ b/node_modules/@capacitor/android/capacitor/src/main/java/com/getcapacitor/plugin/util/CapacitorHttpUrlConnection.java
+@@ -442,7 +442,13 @@ public class CapacitorHttpUrlConnection implements ICapacitorHttpUrlConnection {
+      * Builds and returns a locale string describing the device's current locale preferences.
+      */
+     private String buildDefaultAcceptLanguageProperty() {
+-        Locale locale = LocaleList.getDefault().get(0);
++        Locale locale;
++        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
++            LocaleList locales = LocaleList.getDefault();
++            locale = locales.isEmpty() ? Locale.getDefault() : locales.get(0);
++        } else {
++            locale = Locale.getDefault();
++        }
+         String result = "";
+         String lang = locale.getLanguage();
+         String country = locale.getCountry();

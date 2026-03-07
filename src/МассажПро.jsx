@@ -157,7 +157,10 @@ function buildReportHTML(sessions, label, rates, showClient) {
 // ── CSS ───────────────────────────────────────────────────────────────────────
 const css = `
   *{box-sizing:border-box;margin:0;padding:0}
+  html,body,#root{height:100%}
+  html{-webkit-text-size-adjust:100%;touch-action:manipulation}
   body{background:#0a0f1e}
+  body{-webkit-tap-highlight-color:transparent}
   :root{
     --bg:#0a0f1e;--bg2:#111827;--bg3:#1a2235;--bg4:#232d42;
     --accent:#4ecca3;--accent2:#38b48b;--gold:#f0c060;--red:#ff6b6b;
@@ -179,6 +182,7 @@ const css = `
   .ni-label{font-size:9.5px;color:var(--text3);font-weight:500}
   .ni.on .ni-label{color:var(--accent)}
   .content{flex:1;overflow-y:auto;padding:0 16px 16px}
+  .content{-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain}
   .card{background:var(--card);border:1px solid var(--border2);border-radius:20px;padding:18px;margin-bottom:13px;backdrop-filter:blur(8px)}
   .csm{padding:13px 15px;border-radius:15px}
   .cglow{box-shadow:0 0 40px rgba(78,204,163,.08),0 8px 28px rgba(0,0,0,.4)}
@@ -289,6 +293,7 @@ const css = `
   .cal-dn{text-align:center;font-size:10px;font-weight:700;color:var(--text3);padding:2px 0}
   .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
   .cd{aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:7px;cursor:pointer;transition:all .12s;font-size:11px;font-weight:500;border:1px solid transparent}
+  .ni,.btn,.si,.tog,.cd,.hol-yes,.hol-no,.bicon,.biconsm{touch-action:manipulation}
   .cd:hover{background:rgba(78,204,163,.1)}
   .cd.has{background:rgba(78,204,163,.09);border-color:rgba(78,204,163,.2)}
   .cd.sel{background:var(--accent)!important;border-color:var(--accent)!important;color:#0a0f1e!important;font-weight:800}
@@ -380,8 +385,6 @@ export default function App() {
   const [pdfLabel, setPdfLabel] = useState("");
   // Holiday override: { date: "YYYY-MM-DD", isHoliday: bool }
   const [holidayOverride, setHolidayOverride] = useState(null);
-  // Pending start — waiting for holiday confirm
-  const [pendingStart, setPendingStart] = useState(null);
   const nextId = useRef(sessions.length + 1);
   const iframeRef = useRef(null);
 
@@ -438,7 +441,6 @@ export default function App() {
       return;
     }
     // Ask the user
-    setPendingStart({ client: form.client, type: form.type, note: form.note });
     setModal("holiday");
   };
 

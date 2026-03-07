@@ -2,6 +2,4 @@
 <resources>
     <string name="app_name">MasagePRO</string>
     <string name="title_activity_main">MasagePRO</string>
-    <string name="package_name">com.psykovski.masagepro</string>
-    <string name="custom_url_scheme">com.psykovski.masagepro</string>
 </resources>

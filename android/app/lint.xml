@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<lint>
+    <issue id="IconDipSize">
+        <ignore path="src/main/res/drawable-land-xxxhdpi/splash.png" />
+    </issue>
+    <issue id="IconDuplicatesConfig">
+        <ignore path="src/main/res/drawable/splash.png" />
+    </issue>
+    <issue id="IconLocation">
+        <ignore path="src/main/res/drawable/splash.png" />
+    </issue>
+</lint>

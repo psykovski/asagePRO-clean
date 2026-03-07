@@ -24,9 +24,16 @@ android {
     }
 }
 
-repositories {
-    flatDir{
-        dirs '../capacitor-cordova-android-plugins/src/main/libs', 'libs'
+def localFlatDirs = [
+    file('../capacitor-cordova-android-plugins/src/main/libs'),
+    file('libs'),
+].findAll { dir -> dir.exists() && dir.isDirectory() && dir.listFiles()?.length > 0 }
+
+if (!localFlatDirs.isEmpty()) {
+    repositories {
+        flatDir {
+            dirs localFlatDirs
+        }
     }
 }
 
